@@ -9,7 +9,7 @@ import { create } from 'zustand';
 import { getLyricFilterError } from '../utils/lyrics/filtering';
 import { getLyricStaffPatternError } from '../utils/lyrics/staffCredits';
 import i18n from '../i18n/config';
-import { type LocalLyricsPriority, type LyricProviderSource } from '../types';
+import { type LocalLyricsPriority, type LyricSourcePreference } from '../types';
 import { getLyricProviderPreferenceLabel } from '../utils/lyrics/lyricSourceLabels';
 import { migratePreferredLyricSource } from '../utils/lyrics/sourcePriority';
 import { DEFAULT_LYRIC_STAFF_ABSORB_MODE, DEFAULT_LYRIC_STAFF_MIN_DWELL_SECONDS, DEFAULT_LYRIC_STAFF_POLICY, LYRIC_STAFF_MIN_DWELL_RANGE, type LyricStaffAbsorbMode, type LyricStaffPolicy } from '../utils/lyrics/staffCreditsPolicy';
@@ -47,8 +47,8 @@ export const readStoredLocalLyricsPriority = (): LocalLyricsPriority => {
     return localStorage.getItem(LOCAL_LYRICS_PRIORITY_STORAGE_KEY) === 'online' ? 'online' : 'local';
 };
 
-const readStoredPreferredAlternativeLyricSource = (): LyricProviderSource => {
-    if (typeof window === 'undefined') return 'qq';
+const readStoredPreferredAlternativeLyricSource = (): LyricSourcePreference => {
+    if (typeof window === 'undefined') return 'auto';
     const versioned = localStorage.getItem(PREFERRED_LYRIC_SOURCE_STORAGE_KEY_V2);
     const legacy = localStorage.getItem('preferred_alternative_lyric_source');
     const migrated = migratePreferredLyricSource(versioned, legacy);
@@ -108,7 +108,7 @@ const readStoredLyricStaffAbsorbMode = (): LyricStaffAbsorbMode => {
 
 export type LyricSettingsState = {
     autoUseBestLyric: boolean;
-    preferredAlternativeLyricSource: LyricProviderSource;
+    preferredAlternativeLyricSource: LyricSourcePreference;
     localLyricsPriority: LocalLyricsPriority;
     globalLyricTimelineOffsetMs: number;
     lyricFilterPattern: string;
@@ -119,7 +119,7 @@ export type LyricSettingsState = {
     lyricStaffAbsorbMode: LyricStaffAbsorbMode;
     lyricStaffPattern: string;
     handleToggleAutoUseBestLyric: (enable: boolean) => void;
-    handleSetPreferredAlternativeLyricSource: (source: LyricProviderSource) => void;
+    handleSetPreferredAlternativeLyricSource: (source: LyricSourcePreference) => void;
     handleSetLocalLyricsPriority: (priority: LocalLyricsPriority) => void;
     handleSetGlobalLyricTimelineOffsetMs: (offsetMs: number) => void;
     handleSetLyricFilterPattern: (pattern: string) => void;

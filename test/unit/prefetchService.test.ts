@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { useLyricSettingsStore } from '@/stores/useLyricSettingsStore';
+import { useOnlineProviderAccountStore } from '@/stores/useOnlineProviderAccountStore';
 import type { SongResult } from '@/types';
 import { clearPrefetchRuntime, getPrefetchedData, updatePrefetchedAudioUrl } from '@/services/prefetchService';
 
@@ -44,5 +46,37 @@ describe('prefetched online ReplayGain metadata', () => {
             audioUrl: null,
             replayGain: undefined,
         });
+    });
+});
+
+describe('prefetched lyric priority', () => {
+    beforeEach(() => {
+        clearPrefetchRuntime();
+        useLyricSettingsStore.setState({ autoUseBestLyric: true, preferredAlternativeLyricSource: 'auto' });
+        useOnlineProviderAccountStore.setState({ activeProviderId: 'qq' });
+    });
+
+    it('drops lyrics chosen for the previous platform while retaining the audio', () => {
+        updatePrefetchedAudioUrl(song, 'https://audio.test/song.flac', 'high');
+        const cached = getPrefetchedData(song)!;
+        cached.lyricPreferenceSource = 'qq';
+        cached.lyrics = { lines: [], isWordByWord: true };
+        cached.lyricRaw = { mainLrc: 'QQ lyrics', yrcLrc: null, transLrc: null, isPureMusic: false };
+        expect(getPrefetchedData(song)?.lyrics).toBe(cached.lyrics);
+        useOnlineProviderAccountStore.setState({ activeProviderId: 'netease' });
+        expect(getPrefetchedData(song)).toMatchObject({
+            audioUrl: 'https://audio.test/song.flac', lyrics: null, lyricRaw: null, lyricPreferenceSource: null,
+        });
+    });
+
+    it('keeps an explicit QQ preference when the active platform changes', () => {
+        useLyricSettingsStore.setState({ preferredAlternativeLyricSource: 'qq' });
+        updatePrefetchedAudioUrl(song, 'https://audio.test/song.flac', 'high');
+        const cached = getPrefetchedData(song)!;
+        cached.lyricPreferenceSource = 'qq';
+        const lyrics = { lines: [], isWordByWord: true };
+        cached.lyrics = lyrics;
+        useOnlineProviderAccountStore.setState({ activeProviderId: 'netease' });
+        expect(getPrefetchedData(song)?.lyrics).toBe(lyrics);
     });
 });

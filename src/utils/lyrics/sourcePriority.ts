@@ -1,8 +1,8 @@
-import type { LyricProviderSource } from '../../types';
+import type { LyricProviderSource, LyricSourcePreference } from '../../types';
 
 // src/utils/lyrics/sourcePriority.ts
 
-export const DEFAULT_PREFERRED_LYRIC_SOURCE: LyricProviderSource = 'qq';
+export const DEFAULT_PREFERRED_LYRIC_SOURCE: LyricSourcePreference = 'auto';
 
 const BASE_LYRIC_SOURCE_ORDER: readonly LyricProviderSource[] = ['netease', 'amll', 'qq', 'kugou'];
 
@@ -12,7 +12,7 @@ export const isLyricProviderSource = (value: unknown): value is LyricProviderSou
 
 // Places the user preference first while retaining every fallback source exactly once.
 export const buildLyricSourceOrder = (
-    preferredSource: LyricProviderSource = DEFAULT_PREFERRED_LYRIC_SOURCE,
+    preferredSource: LyricProviderSource = 'netease',
 ): LyricProviderSource[] => [
     preferredSource,
     ...BASE_LYRIC_SOURCE_ORDER.filter(source => source !== preferredSource),
@@ -21,10 +21,19 @@ export const buildLyricSourceOrder = (
 export const migratePreferredLyricSource = (
     versionedValue: unknown,
     legacyValue: unknown,
-): LyricProviderSource => {
+): LyricSourcePreference => {
     if (versionedValue !== null && versionedValue !== undefined) {
-        return isLyricProviderSource(versionedValue) ? versionedValue : DEFAULT_PREFERRED_LYRIC_SOURCE;
+        return versionedValue === 'auto' || isLyricProviderSource(versionedValue) ? versionedValue : DEFAULT_PREFERRED_LYRIC_SOURCE;
     }
-    if (legacyValue === 'amll' || legacyValue === 'qq' || legacyValue === 'kugou') return legacyValue;
+    if (isLyricProviderSource(legacyValue)) return legacyValue;
     return DEFAULT_PREFERRED_LYRIC_SOURCE;
+};
+
+// Resolve at the start of each match so switching platforms does not leave a stale default.
+export const resolvePreferredLyricSource = (
+    preference: LyricSourcePreference,
+    activeProviderId: string | undefined,
+): LyricProviderSource => {
+    if (preference !== 'auto') return preference;
+    return activeProviderId === 'qq' || activeProviderId === 'kugou' ? activeProviderId : 'netease';
 };

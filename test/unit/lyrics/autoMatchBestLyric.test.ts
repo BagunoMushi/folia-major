@@ -53,7 +53,7 @@ describe('autoMatchBestLyric', () => {
         fetchAmllDbLyricsMock.mockResolvedValue(null);
     });
 
-    it('tries the default QQ preference before a prefetched NetEase word-by-word candidate', async () => {
+    it('uses the default NetEase candidate before searching QQ', async () => {
         const neteaseSong = {
             id: 101,
             name: 'Song Title',
@@ -80,8 +80,8 @@ describe('autoMatchBestLyric', () => {
             },
         });
 
-        expect(result && 'lyrics' in result ? result.source : null).toBe('qq');
-        expect(searchQQLyricsMock).toHaveBeenCalledTimes(1);
+        expect(result && 'lyrics' in result ? result.source : null).toBe('netease');
+        expect(searchQQLyricsMock).not.toHaveBeenCalled();
         expect(cloudSearchMock).not.toHaveBeenCalled();
     });
 

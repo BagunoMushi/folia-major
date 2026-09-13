@@ -1,3 +1,4 @@
+import { getPreferredLyricSource } from './lyricSourcePreference';
 import { LyricData, OnlineLyricsState, ReplayGainInfo, SongResult } from '../types';
 import { saveToCache } from './db';
 import { PrefetchedSongData, isUrlValid, updatePrefetchedAudioUrl } from './prefetchService';
@@ -183,7 +184,7 @@ export async function loadOnlineSongLyrics(
             const artistName = metadata.artists.map(a => a.name).join(', ');
             const bestMatch = await autoMatchBestLyric(song.name, artistName, metadata.durationMs, {
                 album: metadata.album?.name,
-                preferredSource: settingsLyricSettings.preferredAlternativeLyricSource,
+                preferredSource: getPreferredLyricSource(settingsLyricSettings.preferredAlternativeLyricSource),
                 providerCandidate: song.sourceRef?.kind === 'online'
                     && (song.sourceRef.providerId === 'netease' || song.sourceRef.providerId === 'kugou' || song.sourceRef.providerId === 'qq')
                     ? {

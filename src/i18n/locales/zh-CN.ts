@@ -652,6 +652,10 @@ export default {
     "noItems": "没有项目",
     "noItemsFound": "没有找到项目",
     "clear": "清除",
+    "enterFullscreen": "进入全屏",
+    "exitFullscreen": "退出全屏",
+    "maximizeWindow": "最大化",
+    "restoreWindow": "还原窗口",
     "remoteControl": "远程控制",
     "seek": "定位",
     "clearActiveCommand": "清除当前命令",
@@ -1036,6 +1040,7 @@ export default {
     "version": "版本"
   },
   "lyricProvider": {
+    "auto": "跟随当前平台",
     "netease": "网易云音乐",
     "qq": "QQ 音乐",
     "kugou": "酷狗音乐",
@@ -1111,7 +1116,7 @@ export default {
   },
   "settings": {
     "lyricMatchPriority": "歌词匹配优先级",
-    "lyricMatchPriorityDesc": "在多个歌词源都存在高置信度匹配时，优先选择该歌词源的结果。"
+    "lyricMatchPriorityDesc": "默认优先当前音乐平台；也可指定歌词源。没有满足匹配要求的逐字歌词时，再尝试其他来源。"
   },
   "options": {
     "refresh": "刷新",
@@ -1391,7 +1396,7 @@ export default {
     "autoUseBestLyric": "自动使用最佳歌词",
     "autoUseBestLyricDesc": "自动检索网易云、AMLLDB、QQ 和酷狗歌词，若存在完美匹配的逐字歌词则自动优先采用。",
     "lyricMatchPriority": "歌词匹配优先级",
-    "lyricMatchPriorityDesc": "在多个歌词源都存在匹配度满足要求的歌词时，优先选择该歌词源的结果。",
+    "lyricMatchPriorityDesc": "默认优先当前音乐平台；也可指定歌词源。没有满足匹配要求的逐字歌词时，再尝试其他来源。",
     "localLyricsPriority": "本地歌曲歌词优先级",
     "localLyricsPriorityDesc": "本地歌曲同时存在在线匹配歌词时，选择优先使用的歌词。手动指定的歌词来源不受影响。",
     "localLyricsPriorityLocal": "本地歌词",

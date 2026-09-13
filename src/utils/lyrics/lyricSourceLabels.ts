@@ -1,5 +1,5 @@
 import i18n from '../../i18n/config';
-import type { AmllDbPlatform, LyricProviderSource, SongResult } from '../../types';
+import type { AmllDbPlatform, LyricProviderSource, LyricSourcePreference, SongResult } from '../../types';
 
 // src/utils/lyrics/lyricSourceLabels.ts
 
@@ -24,8 +24,9 @@ export const getLyricProviderLabel = (
     return getBaseLyricProviderLabel(source ?? 'netease');
 };
 
-export const getLyricProviderPreferenceLabel = (source: LyricProviderSource): string => (
-    source === 'amll' ? i18n.t('lyricProvider.amll') : getBaseLyricProviderLabel(source)
+export const getLyricProviderPreferenceLabel = (source: LyricSourcePreference): string => (
+    source === 'auto' ? i18n.t('lyricProvider.auto')
+        : source === 'amll' ? i18n.t('lyricProvider.amll') : getBaseLyricProviderLabel(source)
 );
 
 export const getSongNativeLyricProviderSource = (

@@ -1,3 +1,4 @@
+import { getPreferredLyricSource } from '../services/lyricSourcePreference';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import type { MotionValue } from 'framer-motion';
@@ -745,7 +746,7 @@ export function useLibraryPlaybackController({
                     if (settingsLyricSettings.autoUseBestLyric) {
                         const bestMatch = await autoMatchBestLyric(navidromeSong.name, artistName, navidromeMetadata.durationMs, {
                             album: albumName,
-                            preferredSource: settingsLyricSettings.preferredAlternativeLyricSource,
+                            preferredSource: getPreferredLyricSource(settingsLyricSettings.preferredAlternativeLyricSource),
                         });
                         if (bestMatch?.isPureMusic) {
                             isAutoMatched = true;
@@ -1205,7 +1206,7 @@ export function useLibraryPlaybackController({
                 });
                 const bestMatch = await autoMatchBestLyric(matchContext.title, matchContext.artist, matchContext.durationMs, {
                     album: matchContext.album,
-                    preferredSource: settingsLyricSettings.preferredAlternativeLyricSource,
+                    preferredSource: getPreferredLyricSource(settingsLyricSettings.preferredAlternativeLyricSource),
                     metadataCandidate: matchContext.metadataCandidate,
                 });
 
@@ -1251,7 +1252,7 @@ export function useLibraryPlaybackController({
                 const albumName = navidromeMetadata.album?.name || '';
                 const bestMatch = await autoMatchBestLyric(navidromeSong.name, artistName, navidromeMetadata.durationMs, {
                     album: albumName,
-                    preferredSource: settingsLyricSettings.preferredAlternativeLyricSource,
+                    preferredSource: getPreferredLyricSource(settingsLyricSettings.preferredAlternativeLyricSource),
                 });
 
                 if (!bestMatch) {
@@ -1300,7 +1301,7 @@ export function useLibraryPlaybackController({
             const ownLyricsResult = await omni.getLyrics(currentSong);
             const bestMatch = await autoMatchBestLyric(currentSong.name, artistName, currentSongMetadata.durationMs, {
                 album: albumName,
-                preferredSource: settingsLyricSettings.preferredAlternativeLyricSource,
+                preferredSource: getPreferredLyricSource(settingsLyricSettings.preferredAlternativeLyricSource),
                 providerCandidate: sourceRef.kind === 'online'
                     && (sourceRef.providerId === 'netease' || sourceRef.providerId === 'kugou')
                     ? { providerId: sourceRef.providerId as 'netease' | 'kugou', song: currentSong, lyricsResult: ownLyricsResult }

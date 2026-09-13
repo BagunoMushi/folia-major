@@ -1099,6 +1099,7 @@ export interface NoCopyrightRecommendation {
 }
 
 export type LyricProviderSource = 'netease' | 'qq' | 'kugou' | 'amll';
+export type LyricSourcePreference = LyricProviderSource | 'auto';
 export type AmllDbPlatform = 'ncm' | 'qq';
 
 export interface ReplayGainInfo {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AudioLines, ChevronRight, ListFilter, Monitor, PlayCircle, Radio, RefreshCw, Settings2, Timer } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
-import type { LocalLyricsPriority, QueueAddBehavior, ReplayGainMode, Theme } from '../../../types';
+import type { LyricSourcePreference, LocalLyricsPriority, QueueAddBehavior, ReplayGainMode, Theme } from '../../../types';
 import { useAudioOutputDevices } from '../../../hooks/useAudioOutputDevices';
 import { CustomSelect } from '../../shared/CustomSelect';
 import { LYRIC_MATCH_SOURCES } from '../../../utils/lyrics/lyricMatchSources';
@@ -33,6 +33,8 @@ type PlaybackSettingsSubviewProps = {
     theme?: Theme;
     utilityGhostButtonClass: string;
 };
+
+const LYRIC_SOURCE_PREFERENCES: readonly LyricSourcePreference[] = ['auto', ...LYRIC_MATCH_SOURCES];
 
 const PlaybackSettingsSubview: React.FC<PlaybackSettingsSubviewProps> = ({
     isDaylight,
@@ -338,8 +340,8 @@ const PlaybackSettingsSubview: React.FC<PlaybackSettingsSubviewProps> = ({
                                     {t('settings.lyricMatchPriorityDesc')}
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
-                                {LYRIC_MATCH_SOURCES.map((source) => {
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                                {LYRIC_SOURCE_PREFERENCES.map((source) => {
                                     const option = { value: source, label: getLyricProviderPreferenceLabel(source) };
                                     const selected = preferredAlternativeLyricSource === option.value;
                                     return (

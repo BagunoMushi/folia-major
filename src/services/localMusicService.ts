@@ -1,3 +1,4 @@
+import { getPreferredLyricSource } from './lyricSourcePreference';
 import { LocalSong, LyricData, LocalLibrarySnapshot, LocalLibrarySnapshotFile, LocalLibrarySnapshotNode, type SongResult } from '../types';
 import { saveLocalSong, saveLocalSongs, deleteLocalSong as dbDeleteLocalSong, deleteLocalSongs as dbDeleteLocalSongs, saveDirHandles, getDirHandles, deleteDirHandle, getLocalSongs, getLocalLibrarySnapshot, saveLocalLibrarySnapshot, deleteLocalLibrarySnapshot } from './db';
 import { getLocalPlaylists, saveLocalPlaylists } from './localPlaylistService';
@@ -1301,7 +1302,7 @@ export async function matchLyrics(song: LocalSong): Promise<LyricData | null> {
                     matchContext.durationMs,
                     {
                         album: matchContext.album,
-                        preferredSource: shouldUseBestLyric ? settingsLyricSettings.preferredAlternativeLyricSource : undefined,
+                        preferredSource: shouldUseBestLyric ? getPreferredLyricSource(settingsLyricSettings.preferredAlternativeLyricSource) : undefined,
                         metadataCandidate: matchContext.metadataCandidate,
                         exactMatchOnly: Boolean(matchContext.metadataCandidate && !shouldUseBestLyric),
                     },

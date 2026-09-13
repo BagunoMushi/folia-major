@@ -649,6 +649,10 @@ export default {
     "noItems": "Tidak ada item",
     "noItemsFound": "Tidak ada item ditemukan",
     "clear": "Bersihkan",
+    "enterFullscreen": "Masuk layar penuh",
+    "exitFullscreen": "Keluar layar penuh",
+    "maximizeWindow": "Maksimalkan",
+    "restoreWindow": "Pulihkan jendela",
     "remoteControl": "Remote control",
     "seek": "Cari",
     "clearActiveCommand": "Bersihkan perintah aktif",
@@ -1032,6 +1036,7 @@ export default {
     "version": "versi"
   },
   "lyricProvider": {
+    "auto": "Ikuti platform aktif",
     "netease": "NetEase Cloud Music",
     "qq": "QQ Music",
     "kugou": "Kugou Music",
@@ -1107,7 +1112,7 @@ export default {
   },
   "settings": {
     "lyricMatchPriority": "Prioritas pencocokan lirik",
-    "lyricMatchPriorityDesc": "Saat beberapa sumber lirik memiliki kecocokan berkualitas tinggi, utamakan sumber ini terlebih dahulu."
+    "lyricMatchPriorityDesc": "Utamakan platform musik aktif secara default, atau pilih sumber. Coba sumber lain jika lirik per kata yang cocok tidak tersedia."
   },
   "options": {
     "refresh": "Segarkan",
@@ -1386,7 +1391,7 @@ export default {
     "autoUseBestLyric": "Gunakan Lirik Terbaik Otomatis",
     "autoUseBestLyricDesc": "Secara otomatis mencari lirik NetEase, AMLLDB, QQ, dan Kugou, mengutamakan lirik per kata dengan kecocokan waktu sempurna.",
     "lyricMatchPriority": "Prioritas pencocokan lirik",
-    "lyricMatchPriorityDesc": "Saat beberapa sumber lirik memiliki kecocokan berkualitas tinggi, utamakan sumber ini terlebih dahulu.",
+    "lyricMatchPriorityDesc": "Utamakan platform musik aktif secara default, atau pilih sumber. Coba sumber lain jika lirik per kata yang cocok tidak tersedia.",
     "localLyricsPriority": "Prioritas lirik lagu lokal",
     "localLyricsPriorityDesc": "Pilih lirik mana yang digunakan pertama kali saat lagu lokal juga memiliki kecocokan online. Pilihan sumber lirik manual tetap dipertahankan.",
     "localLyricsPriorityLocal": "Lirik lokal",

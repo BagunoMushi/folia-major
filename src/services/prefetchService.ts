@@ -5,6 +5,7 @@
  * Handles URL expiration (1200s TTL) and re-prefetches on queue changes.
  */
 
+import { getPreferredLyricSource } from './lyricSourcePreference';
 import { ReplayGainInfo, SongResult, LyricData, OnlineLyricsState, type LyricProviderSource } from '../types';
 import { migrateLyricDataRenderHints } from '../utils/lyrics/renderHints';
 import { isPureMusicLyricText } from '../utils/lyrics/pureMusic';
@@ -154,6 +155,14 @@ export const getPrefetchedData = (song: SongResult, requiredQuality?: AudioQuali
         cached.replayGain = undefined;
     }
 
+    const lyricSettings = useLyricSettingsStore.getState();
+    if (lyricSettings.autoUseBestLyric
+        && cached.lyricPreferenceSource !== getPreferredLyricSource(lyricSettings.preferredAlternativeLyricSource)) {
+        cached.lyrics = null;
+        cached.lyricRaw = null;
+        cached.lyricPreferenceSource = null;
+    }
+
     return touchPrefetchCacheEntry(songKey, cached);
 };
 
@@ -182,13 +191,13 @@ const prefetchSong = async (
     const songKey = getPrefetchSongKey(song);
 
     // Check if already prefetched with valid URL
-    const existing = prefetchCache.get(songKey);
+    const existing = getPrefetchedData(song);
     if (existing?.audioUrl && existing.audioUrl !== 'CACHED_IN_DB') {
         existing.audioUrl = toSafePlaybackUrl(existing.audioUrl) ?? null;
     }
   const currentSettingsLyricSettings = useLyricSettingsStore.getState();
     const lyricPreferenceMatches = !currentSettingsLyricSettings.autoUseBestLyric
-        || existing?.lyricPreferenceSource === currentSettingsLyricSettings.preferredAlternativeLyricSource;
+        || existing?.lyricPreferenceSource === getPreferredLyricSource(currentSettingsLyricSettings.preferredAlternativeLyricSource);
     if (existing && lyricPreferenceMatches && existing.audioUrl && isUrlValid(existing.audioUrlFetchedAt) && (existing.lyrics || existing.lyricRaw?.isPureMusic)) {
         console.log(`[Prefetch] Already cached: ${song.name}`);
         touchPrefetchCacheEntry(songKey, existing);
@@ -240,16 +249,22 @@ const prefetchSong = async (
     // Prefetch lyrics (if not cached)
     if (!data.lyrics) {
         try {
+            const onlineLyricsState = await loadOnlineLyricsState(song);
+            const hasAuthoritativeLyricsSelection = onlineLyricsState?.lyricsSource === 'imported'
+                || Boolean(onlineLyricsState?.hasOnlineOverride);
             // Check IndexedDB cache first
             const cachedLyrics = await getSongCacheWithLegacyMigration<LyricData>('lyric', song, migrateLyricDataRenderHints);
-            if (cachedLyrics) {
+            // Persistent lyric data has no priority stamp. Automatic matching must resolve it
+            // again instead of labelling an old source as the current platform's result.
+            // Imported lyrics and saved per-song selections remain authoritative.
+            if (cachedLyrics && (hasAuthoritativeLyricsSelection || !currentSettingsLyricSettings.autoUseBestLyric)) {
                 console.log(`[Prefetch] Lyrics in IndexedDB for: ${song.name}`);
-                data.lyrics = cachedLyrics;
+                data.lyrics = resolveOnlineLyrics(onlineLyricsState, cachedLyrics);
                 // The same stamp the fetched path leaves below. Without it a track whose lyrics came
                 // from the cache can never satisfy the "already cached" test at the top of this
                 // function, so every prefetch pass re-enters the whole thing for it.
                 data.lyricPreferenceSource = currentSettingsLyricSettings.autoUseBestLyric
-                    ? currentSettingsLyricSettings.preferredAlternativeLyricSource
+                    ? getPreferredLyricSource(currentSettingsLyricSettings.preferredAlternativeLyricSource)
                     : null;
             } else if (!signal.aborted) {
                 const lyricResult = await omni.getLyrics(song, { userId });
@@ -271,14 +286,13 @@ const prefetchSong = async (
                 let parsedLyrics = processed.lyrics;
                 let finalLyrics = parsedLyrics;
 
-                const onlineLyricsState = await loadOnlineLyricsState(song);
                 const resolvedLyrics = resolveOnlineLyrics(onlineLyricsState, parsedLyrics);
 
   const settingsAudioSettings = useAudioSettingsStore.getState();
   const settingsAutomixSettings = useAutomixSettingsStore.getState();
   const settingsLyricSettings = useLyricSettingsStore.getState();
                 const autoUseBest = settingsLyricSettings.autoUseBestLyric;
-                const preferredSource = settingsLyricSettings.preferredAlternativeLyricSource;
+                const preferredSource = getPreferredLyricSource(settingsLyricSettings.preferredAlternativeLyricSource);
                 const shouldAutoMatch = autoUseBest && !onlineLyricsState?.hasOnlineOverride;
 
                 if (shouldAutoMatch) {
@@ -287,7 +301,7 @@ const prefetchSong = async (
                         const artistName = metadata.artists.map(a => a.name).join(', ');
                         const bestMatch = await autoMatchBestLyric(song.name, artistName, metadata.durationMs, {
                             album: metadata.album?.name,
-                            preferredSource: settingsLyricSettings.preferredAlternativeLyricSource,
+                            preferredSource,
                             ...(sourceRef.providerId === 'netease' || sourceRef.providerId === 'kugou' || sourceRef.providerId === 'qq'
                                 ? { providerCandidate: {
                                     providerId: sourceRef.providerId as 'netease' | 'kugou' | 'qq',

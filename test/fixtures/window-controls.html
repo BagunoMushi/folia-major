@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Window controls fixture</title></head>
+<body>
+  <div id="root" style="height: 44px"></div>
+  <button id="unmount">Unmount controls</button>
+  <script type="module">
+    import React from 'react';
+    import { createRoot } from 'react-dom/client';
+    import WindowControls from '/src/components/WindowControls.tsx';
+    import i18n from '/src/i18n/config.ts';
+    import '/src/index.css';
+    // test/fixtures/window-controls.html
+    await i18n.changeLanguage('en');
+    const root = createRoot(document.getElementById('root'));
+    root.render(React.createElement(WindowControls, { revealed: true }));
+    document.getElementById('unmount').onclick = () => root.unmount();
+  </script>
+</body>
+</html>

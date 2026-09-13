@@ -652,6 +652,10 @@ export default {
     "noItems": "No items",
     "noItemsFound": "No items found",
     "clear": "Clear",
+    "enterFullscreen": "Enter fullscreen",
+    "exitFullscreen": "Exit fullscreen",
+    "maximizeWindow": "Maximize",
+    "restoreWindow": "Restore window",
     "remoteControl": "Remote control",
     "seek": "Seek",
     "clearActiveCommand": "Clear active command",
@@ -1037,6 +1041,7 @@ export default {
     "version": "version"
   },
   "lyricProvider": {
+    "auto": "Follow active platform",
     "netease": "NetEase Cloud Music",
     "qq": "QQ Music",
     "kugou": "Kugou Music",
@@ -1112,7 +1117,7 @@ export default {
   },
   "settings": {
     "lyricMatchPriority": "Lyric match priority",
-    "lyricMatchPriorityDesc": "When multiple lyric sources have high-confidence matches, prefer this source first."
+    "lyricMatchPriorityDesc": "Prefer the active music platform by default, or choose a source. Try other sources when no matching word-by-word lyrics are available."
   },
   "options": {
     "refresh": "Refresh",
@@ -1392,7 +1397,7 @@ export default {
     "autoUseBestLyric": "Auto Use Best Lyric",
     "autoUseBestLyricDesc": "Automatically search NetEase, AMLLDB, QQ, and Kugou lyrics, prioritizing word-by-word lyrics with perfect timing matches.",
     "lyricMatchPriority": "Lyric match priority",
-    "lyricMatchPriorityDesc": "When multiple lyric sources have high-confidence matches, prefer this source first.",
+    "lyricMatchPriorityDesc": "Prefer the active music platform by default, or choose a source. Try other sources when no matching word-by-word lyrics are available.",
     "localLyricsPriority": "Local song lyrics priority",
     "localLyricsPriorityDesc": "Choose which lyrics are used first when a local song also has an online match. Manual lyric source choices are preserved.",
     "localLyricsPriorityLocal": "Local lyrics",
