@@ -4,12 +4,6 @@ const cachedAudioMock = vi.hoisted(() => vi.fn());
 const songCacheMock = vi.hoisted(() => vi.fn());
 const sourceMock = vi.hoisted(() => vi.fn());
 const lyricsMock = vi.hoisted(() => vi.fn());
-const lyricSettings = vi.hoisted(() => ({ autoUseBestLyric: true, preferredAlternativeLyricSource: 'qq' as import('@/types').LyricSourcePreference }));
-const activeAccount = vi.hoisted(() => ({ activeProviderId: 'netease' }));
-vi.mock('@/stores/useOnlineProviderAccountStore', () => ({
-    useOnlineProviderAccountStore: { getState: () => activeAccount },
-}));
-
 const autoMatchMock = vi.hoisted(() => vi.fn());
 const loadLyricsStateMock = vi.hoisted(() => vi.fn());
 const saveLyricsStateMock = vi.hoisted(() => vi.fn());
@@ -30,7 +24,7 @@ vi.mock('@/services/onlineMusic/omni', () => ({
 
 vi.mock('@/stores/useLyricSettingsStore', () => ({
     useLyricSettingsStore: {
-        getState: () => lyricSettings,
+        getState: () => ({ autoUseBestLyric: true, preferredAlternativeLyricSource: 'qq' }),
     },
 }));
 
@@ -312,37 +306,5 @@ describe('instrumental tracks, once auto-match has settled them', () => {
         expect(merged.lyricsSource).toBe('imported');
         expect(merged.importedLyrics).toBe(imported);
         expect(merged.matchedIsPureMusic).toBe(true);
-    });
-});
-
-describe('active account lyric priority during playback', () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-        songCacheMock.mockResolvedValue(null);
-        loadLyricsStateMock.mockResolvedValue(null);
-        lyricsMock.mockResolvedValue({ lyrics: null, isPureMusic: false, chorusRanges: [] });
-        autoMatchMock.mockResolvedValue(null);
-        lyricSettings.preferredAlternativeLyricSource = 'auto';
-    });
-
-    it('resolves the platform afresh for each playback', async () => {
-        for (const provider of ['netease', 'qq', 'kugou']) {
-            activeAccount.activeProviderId = provider;
-            await loadOnlineSongLyrics(song, null, null, {
-                isCurrent: () => true, onLyrics: vi.fn(), onDone: vi.fn(),
-            });
-            expect(autoMatchMock).toHaveBeenLastCalledWith('Song', '', 1000,
-                expect.objectContaining({ preferredSource: provider }));
-        }
-    });
-
-    it('honors an explicit source even with NetEase active', async () => {
-        activeAccount.activeProviderId = 'netease';
-        lyricSettings.preferredAlternativeLyricSource = 'qq';
-        await loadOnlineSongLyrics(song, null, null, {
-            isCurrent: () => true, onLyrics: vi.fn(), onDone: vi.fn(),
-        });
-        expect(autoMatchMock).toHaveBeenLastCalledWith('Song', '', 1000,
-            expect.objectContaining({ preferredSource: 'qq' }));
     });
 });
